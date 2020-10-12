@@ -21,14 +21,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CriarOperacaoTest {
 
-    @Autowired
+
     private ContaService contaService;
 
-    @Autowired
     private GerarContas gerarContas;
 
-    @Autowired
     private TransacaoRepository transacaoRepository;
+
+    @Autowired
+    public CriarOperacaoTest(ContaService contaService, GerarContas gerarContas, TransacaoRepository transacaoRepository) {
+        this.contaService = contaService;
+        this.gerarContas = gerarContas;
+        this.transacaoRepository = transacaoRepository;
+    }
 
     @Nested
     public abstract class SetupDeOperacao {

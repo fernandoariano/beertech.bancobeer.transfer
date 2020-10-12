@@ -11,17 +11,20 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 @Service
 public class ContaService {
 
-    private final ContaRepository contaRepository;
-    private final TransacaoRepository transacaoRepository;
+    @Autowired
+    private  ContaRepository contaRepository;
 
     @Autowired
-    public ContaService(ContaRepository contaRepository, TransacaoRepository transacaoRepository) {
-        this.contaRepository = contaRepository;
-        this.transacaoRepository = transacaoRepository;
-    }
+    private ExecutaOperacaoService executaOperacaoService;
+
+    @Autowired
+    private TransacaoRepository transacaoRepository;
+
+
 
     public List<Conta> listAll() {
         return contaRepository.findAll();
@@ -38,9 +41,12 @@ public class ContaService {
     }
 
     public Conta save(Conta conta) {
-       return contaRepository.save(conta);
+        return contaRepository.save(conta);
     }
 
+    public void deleteConta(String hashConta) {
+        contaRepository.deleteByHash(hashConta);
+    }
 
     public Conta save(ContaDto request) {
         Conta conta = new Conta();
@@ -48,10 +54,34 @@ public class ContaService {
         return contaRepository.save(conta);
     }
 
-    public Conta save(TransacaoDto request, String hashConta) {
-        Conta conta = contaRepository.findByHash(hashConta).orElseThrow(() -> new RuntimeException("Not Found"));
+    public Conta executaOperacao(TransacaoDto request, String hashConta) {
 
-        return(save(request,conta.getId()));
+        Conta conta = contaRepository.findByHash(hashConta).orElseThrow(() -> new RuntimeException("Not Found"));
+        Double valor = request.getValor();
+        Transacao.Operacao operacao = Transacao.Operacao.valueOf(request.getOperacao().toUpperCase());
+
+        if (operacao == Transacao.Operacao.SAQUE)
+            executaOperacaoService.saque(conta, valor);
+
+        if (operacao == Transacao.Operacao.DEPOSITO)
+            executaOperacaoService.deposito(conta, valor);
+
+        return contaRepository.findByHash(hashConta).orElseThrow(() -> new RuntimeException("Not Found"));
+
+    }
+
+    public Conta executaOperacao(TransacaoDto request, String hashContaOrigem, String hashContaDestino) {
+
+        Conta contaOrigem = contaRepository.findByHash(hashContaOrigem).orElseThrow(() -> new RuntimeException("Not Found"));
+        Conta contaDestino = contaRepository.findByHash(hashContaDestino).orElseThrow(() -> new RuntimeException("Not Found"));
+
+        Double valor = request.getValor();
+        Transacao.Operacao operacao = Transacao.Operacao.valueOf(request.getOperacao().toUpperCase());
+
+        if (operacao == Transacao.Operacao.TRANSFERENCIA)
+            executaOperacaoService.transferencia(contaOrigem, contaDestino, valor);
+
+        return contaRepository.findByHash(hashContaOrigem).orElseThrow(() -> new RuntimeException("Not Found"));
 
     }
 
@@ -59,18 +89,18 @@ public class ContaService {
 
         Conta conta = contaRepository.findById(idConta).orElseThrow(() -> new RuntimeException("Not Found"));
 
-        Double valor= request.getValor();
+        Double valor = request.getValor();
 
         Transacao.Operacao operacao = Transacao.Operacao.valueOf(request.getOperacao().toUpperCase());
 
-        if(operacao == Transacao.Operacao.SAQUE) {
+        if (operacao == Transacao.Operacao.SAQUE) {
             if (conta.getSaldo() < valor) throw new RuntimeException("Saldo insuficiente");
             conta.saque(valor);
         }
 
         if (operacao == Transacao.Operacao.DEPOSITO) conta.deposito(valor);
 
-        Transacao transacao= Transacao
+        Transacao transacao = Transacao
                 .builder()
                 .conta(conta)
                 .operacao(operacao)
@@ -82,4 +112,5 @@ public class ContaService {
         transacaoRepository.save(transacao);
         return save(conta);
     }
+
 }

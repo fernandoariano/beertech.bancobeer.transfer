@@ -11,4 +11,6 @@ public interface  ContaRepository  extends JpaRepository<Conta, Long> {
 
     Optional<Conta> findByHash(String hash);
 
+    void deleteByHash(String hash);
+
 }

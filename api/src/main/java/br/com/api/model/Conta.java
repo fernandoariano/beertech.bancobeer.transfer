@@ -31,7 +31,7 @@ public class Conta implements Serializable {
     @Min(value = 0)
     private Double saldo;
 
-    @OneToMany(mappedBy =  "conta", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "conta",  cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<Transacao> transacao;
 
@@ -46,10 +46,12 @@ public class Conta implements Serializable {
     }
 
     public void saque(Double valor) {
-        this.setSaldo(this.saldo + valor *-1);
+
+        this.setSaldo(this.saldo + valor * -1);
     }
 
     public void deposito(Double valor) {
+
         this.setSaldo(this.saldo + valor);
     }
 

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 public class Transacao implements Serializable {
 
-    public enum Operacao{DEPOSITO,SAQUE}
+    public enum Operacao{DEPOSITO,SAQUE,TRANSFERENCIA}
 
 
     @Id
