@@ -3,6 +3,7 @@ package br.com.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -11,15 +12,20 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Entity
 @Data
 @NoArgsConstructor
 public class Conta implements Serializable {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @NotNull
+    private String hash = UUID.randomUUID().toString();
 
     @NotNull
     @Min(value = 0)

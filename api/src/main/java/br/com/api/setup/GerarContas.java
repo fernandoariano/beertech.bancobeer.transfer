@@ -20,5 +20,6 @@ public class GerarContas {
         Conta conta = new Conta();
         conta.setSaldo(1000d);
         return contaRepository.save(conta);
+
     }
 }

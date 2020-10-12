@@ -19,6 +19,8 @@ public class ApiApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) {
 		gerarContas.criar();
+		gerarContas.criar();
+		gerarContas.criar();
 	}
 
 }
