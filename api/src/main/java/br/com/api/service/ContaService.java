@@ -1,5 +1,6 @@
 package br.com.api.service;
 
+import br.com.api.dto.ContaDto;
 import br.com.api.dto.TransacaoDto;
 import br.com.api.model.Conta;
 import br.com.api.model.Transacao;
@@ -36,13 +37,25 @@ public class ContaService {
         return conta.getSaldo();
     }
 
+    public Conta save(Conta conta) {
+       return contaRepository.save(conta);
+    }
+
+
+    public Conta save(ContaDto request) {
+        Conta conta = new Conta();
+        conta.setSaldo(request.getSaldo());
+        return contaRepository.save(conta);
+    }
+
     public Conta save(TransacaoDto request, String hashConta) {
         Conta conta = contaRepository.findByHash(hashConta).orElseThrow(() -> new RuntimeException("Not Found"));
 
         return(save(request,conta.getId()));
 
     }
-        public Conta save(TransacaoDto request, Long idConta) {
+
+    public Conta save(TransacaoDto request, Long idConta) {
 
         Conta conta = contaRepository.findById(idConta).orElseThrow(() -> new RuntimeException("Not Found"));
 
@@ -67,6 +80,6 @@ public class ContaService {
 
         conta.getTransacao().add(transacao);
         transacaoRepository.save(transacao);
-        return contaRepository.save(conta);
+        return save(conta);
     }
 }

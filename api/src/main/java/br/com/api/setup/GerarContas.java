@@ -19,7 +19,8 @@ public class GerarContas {
     public Conta criar() {
         Conta conta = new Conta();
         conta.setSaldo(1000d);
-        return contaRepository.save(conta);
+
+        return contaRepository.findAll().stream().findAny().orElse(contaRepository.save(conta));
 
     }
 }
