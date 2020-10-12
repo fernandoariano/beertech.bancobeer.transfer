@@ -30,13 +30,19 @@ public class ContaService {
         return contaRepository.findById(idConta).orElseThrow();
     }
 
-    public Double getSaldo(Long idConta) {
-        Conta conta = contaRepository.findById(idConta).orElseThrow(() -> new RuntimeException("Not Found"));
+    public Double getSaldo(String hashConta) {
+        Conta conta = contaRepository.findByHash(hashConta).orElseThrow(() -> new RuntimeException("Not Found"));
 
         return conta.getSaldo();
     }
 
-    public Conta save(TransacaoDto request, Long idConta) {
+    public Conta save(TransacaoDto request, String hashConta) {
+        Conta conta = contaRepository.findByHash(hashConta).orElseThrow(() -> new RuntimeException("Not Found"));
+
+        return(save(request,conta.getId()));
+
+    }
+        public Conta save(TransacaoDto request, Long idConta) {
 
         Conta conta = contaRepository.findById(idConta).orElseThrow(() -> new RuntimeException("Not Found"));
 

@@ -26,29 +26,29 @@ public class ContaController {
         return contaService.listAll();
     }
 
-    @PostMapping(path = "/{idConta}",
+    @PostMapping(path = "/{hashConta}",
             consumes={MediaType.APPLICATION_JSON_VALUE},
             produces={MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation(value="Insere operação a conta.", produces="application/json")
 
     public Conta addTransacao(
-            @ApiParam(name="idConta", required=true, value="ID de conta", example="1")
-            @PathVariable Long idConta,
-            @ApiParam(name="request", required=true, value="Objeto com as reservas a serem criadas/atualizadas")
+            @ApiParam(name="hashConta", required=true, value="Hash da conta alvo da operação", example="1")
+            @PathVariable String hashConta,
+            @ApiParam(name="request", required=true, value="Operacao e valor")
             @Valid @RequestBody TransacaoDto request
             ){
 
-            return contaService.save(request,idConta);
+            return contaService.save(request,hashConta);
 
     }
 
 
-    @GetMapping(path = "/{idConta}/saldos",
+    @GetMapping(path = "/{hashConta}/saldos",
             consumes={MediaType.APPLICATION_JSON_VALUE},
             produces={MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation(value="Retorna.", produces="application/json")
-    public void getSaldo(@ApiParam(name="idConta", required=true, value="ID de conta", example="1") @PathVariable Long idConta){
-        contaService.getSaldo(idConta);
+    public void getSaldo(@ApiParam(name="hashConta", required=true, value="Hash da conta", example="1") @PathVariable String hashConta){
+        contaService.getSaldo(hashConta);
     }
 
 }

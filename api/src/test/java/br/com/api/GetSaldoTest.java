@@ -37,7 +37,7 @@ public class GetSaldoTest {
         void setup() {
             conta = gerarContas.criar();
             setupConta();
-            saldo = contaService.getSaldo(conta.getId());
+            saldo = contaService.getSaldo(conta.getHash());
         }
 
         protected void setupConta() {
