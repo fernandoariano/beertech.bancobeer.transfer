@@ -5,6 +5,7 @@ import br.com.api.model.Conta;
 import br.com.api.model.Transacao;
 import br.com.api.repository.TransacaoRepository;
 import br.com.api.service.ContaService;
+import br.com.api.service.OperacaoService;
 import br.com.api.setup.GerarContas;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -20,6 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class GetSaldoTest {
+
+    @Autowired
+    OperacaoService operacaoService;
 
     @Autowired
     private ContaService contaService;
@@ -49,8 +53,8 @@ public class GetSaldoTest {
             transacaoDto1.setOperacao(Transacao.Operacao.DEPOSITO.name());
             transacaoDto1.setValor(50d);
 
-            contaService.save(transacaoDto, conta.getId());
-            contaService.save(transacaoDto1, conta.getId());
+            operacaoService.executaTransacao(transacaoDto, conta.getHash());
+            operacaoService.executaTransacao(transacaoDto1, conta.getHash());
         }
     }
 

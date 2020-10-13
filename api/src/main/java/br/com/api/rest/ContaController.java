@@ -2,7 +2,9 @@ package br.com.api.rest;
 
 import br.com.api.dto.ContaDto;
 import br.com.api.dto.TransacaoDto;
+import br.com.api.dto.TransferenciaDto;
 import br.com.api.model.Transacao;
+import br.com.api.service.OperacaoService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import br.com.api.model.Conta;
@@ -21,11 +23,13 @@ public class ContaController {
     @Autowired
     ContaService contaService;
 
+    @Autowired
+    OperacaoService operacaoService;
+
     @PostMapping(
             consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ApiOperation(value = "Efetua operação na conta.", produces = "application/json")
-
+    @ApiOperation(value = "Cria conta.", produces = "application/json")
     public Conta criarConta(
             @ApiParam(name = "request", required = true, value = "Conta")
             @Valid @RequestBody ContaDto request
@@ -34,7 +38,6 @@ public class ContaController {
         return contaService.save(request);
 
     }
-
 
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation(value = "Lista as contas disponíveis.", produces = "application/json")
@@ -53,18 +56,32 @@ public class ContaController {
             @Valid @RequestBody TransacaoDto request
     ) {
 
-        return contaService.save(request, hashConta);
+       return operacaoService.executaTransacao(request,hashConta);
 
     }
-
 
     @GetMapping(path = "/{hashConta}/saldos",
-            consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation(value = "Retorna saldo da conta.", produces = "application/json")
-    public void getSaldo(@ApiParam(name = "hashConta", required = true, value = "Hash da conta")
+    public ContaDto getSaldo(@ApiParam(name = "hashConta", required = true, value = "Hash da conta")
                          @PathVariable String hashConta) {
-        contaService.getSaldo(hashConta);
+        ContaDto  contaDto = new ContaDto();
+        contaDto.setSaldo(contaService.getSaldo(hashConta));
+        return contaDto;
     }
+
+    @PostMapping(path = "/transferencias",
+            consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiOperation(value = "Efetua trasnferencia entre contas.", produces = "application/json")
+    public Conta addTransacao(
+            @ApiParam(name = "request", required = true, value = "Hash da conta de origem, o Hash da conta de destino e o valor a ser transferido")
+            @Valid @RequestBody TransferenciaDto request
+    ) {
+
+         return operacaoService.executaTransacao(request);
+
+    }
+
 
 }

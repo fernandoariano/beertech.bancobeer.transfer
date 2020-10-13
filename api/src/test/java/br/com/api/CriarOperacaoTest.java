@@ -5,6 +5,7 @@ import br.com.api.model.Conta;
 import br.com.api.model.Transacao;
 import br.com.api.repository.TransacaoRepository;
 import br.com.api.service.ContaService;
+import br.com.api.service.OperacaoService;
 import br.com.api.setup.GerarContas;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -20,6 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CriarOperacaoTest {
+
+    @Autowired
+    private OperacaoService operacaoService;
 
     @Autowired
     private ContaService contaService;
@@ -40,7 +44,7 @@ public class CriarOperacaoTest {
         @BeforeEach
         void setup() {
             conta = gerarContas.criar();
-            contaAtualizada = contaService.save(getTransacaoDto(), conta.getId());
+            contaAtualizada = operacaoService.executaTransacao(getTransacaoDto(), conta.getHash());
             transacao = transacaoRepository.findByContaId(conta.getId());
         }
 
@@ -91,7 +95,7 @@ public class CriarOperacaoTest {
 
         @Test
         void deveRetornarMensagemDeErro() {
-            assertThrows(RuntimeException.class, ()->{contaService.save(getTransacaoDto(), conta.getId());} );
+            assertThrows(RuntimeException.class, ()->{operacaoService.executaTransacao(getTransacaoDto(), conta.getHash());} );
         }
     }
 
@@ -138,7 +142,7 @@ public class CriarOperacaoTest {
 
         @Test
         void deveRetornarMensagemDeErro() {
-            assertThrows(RuntimeException.class, ()->{contaService.save(getTransacaoDto(), conta.getId());} );
+            assertThrows(RuntimeException.class, ()->{operacaoService.executaTransacao(getTransacaoDto(), conta.getHash());} );
         }
     }
 }

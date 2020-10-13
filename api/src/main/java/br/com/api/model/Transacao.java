@@ -1,6 +1,7 @@
 package br.com.api.model;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 public class Transacao implements Serializable {
 
-    public enum Operacao{DEPOSITO,SAQUE}
+    public enum Operacao{DEPOSITO,SAQUE,TRANSFERENCIA_OUT,TRANSFERENCIA_IN}
 
 
     @Id

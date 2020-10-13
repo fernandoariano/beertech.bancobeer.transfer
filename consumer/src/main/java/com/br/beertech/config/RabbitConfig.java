@@ -29,7 +29,7 @@ public class RabbitConfig {
 
   @Bean
   public ApplicationRunner runner(
-      final RabbitListenerEndpointRegistry registry, final AmqpAdmin admin) {
+          final RabbitListenerEndpointRegistry registry, final AmqpAdmin admin) {
 
     return args -> {
       registry.start();
@@ -46,6 +46,10 @@ public class RabbitConfig {
     return new TopicExchange("operacao.exchange-dlq",true,false);
   }
 
+  @Bean
+  public TopicExchange transferenciaTopicExchange(){
+    return new TopicExchange("transferencia.exchange",true,false);
+  }
 
   @Bean
   public Declarables declarablesBean(){
@@ -58,6 +62,11 @@ public class RabbitConfig {
     declarables.add(operacaoQueue);
     declarables.add(operacaoBinding);
 
+    Queue transferenciaQueue = QueueBuilder.durable("transferencia").build();
+    Binding transferenciaBinding = BindingBuilder.bind(transferenciaQueue).to(transferenciaTopicExchange()).with(".");
+
+    declarables.add(transferenciaQueue);
+    declarables.add(transferenciaBinding);
     return new Declarables(declarables);
   }
 
@@ -72,7 +81,7 @@ public class RabbitConfig {
   public ConnectionFactory bancoConnectionFactory() {
 
     final CachingConnectionFactory connectionFactory =
-        new CachingConnectionFactory("localhost",5672);
+            new CachingConnectionFactory("localhost",5672);
     connectionFactory.setUsername("guest");
     connectionFactory.setPassword("guest");
     connectionFactory.setVirtualHost("/");
@@ -82,11 +91,11 @@ public class RabbitConfig {
 
   @Bean
   public SimpleRabbitListenerContainerFactory simpleContainerFactory(
-      @Qualifier("bancoConnectionFactory") final ConnectionFactory connectionFactory) {
+          @Qualifier("bancoConnectionFactory") final ConnectionFactory connectionFactory) {
     return createContainerFactory(connectionFactory);
   }
   public SimpleRabbitListenerContainerFactory createContainerFactory(
-      final ConnectionFactory connectionFactory) {
+          final ConnectionFactory connectionFactory) {
 
     final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
     factory.setConnectionFactory(connectionFactory);
